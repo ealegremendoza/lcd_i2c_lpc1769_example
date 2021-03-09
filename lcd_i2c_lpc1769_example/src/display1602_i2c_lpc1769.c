@@ -9,8 +9,9 @@
 
 xDisplayI2C LCD;			// To operate the LCD.
 static int mode_poll;   	// Poll/Interrupt mode flag
-uint8_t  LCD_BL_Status = LCD_BACKLIGHT_ON;     // 1: BACKLIGTH ON, 0 for NEGATIVE control
+uint8_t  LCD_BL_Status_g = LCD_BACKLIGHT_ON;     // 1: BACKLIGTH ON, 0 for NEGATIVE control
 
+char  LCD_Buffer_g[LCD_CANT_LINES][LCD_BUFFER_SIZE];
 /**@brief	Initialice I2C peripheral
  * @param	Nothing
  * @return	Nothing
@@ -43,7 +44,7 @@ void LCD_Init (void)
 	LCD.RS	= 0;
     LCD.RW	= 0;
     LCD.EN	= 0;
-    LCD.BL	= LCD_BL_Status;
+    LCD.BL	= LCD_BL_Status_g;
 
     LCD_write_upper_nibble(FUNCTION_RESET_8BIT);
    	LCD_write_upper_nibble(FUNCTION_RESET_8BIT);
@@ -75,7 +76,7 @@ void LCD_write_byte(uint8_t address, uint8_t b)
 
     LCD.RW	= 0;
     LCD.EN	= 0;
-    LCD.BL	= LCD_BL_Status;
+    LCD.BL	= LCD_BL_Status_g;
 
 
     // Send upper nibble
@@ -232,7 +233,7 @@ void LCD_Set_Cursor(uint8_t col, uint8_t row)
  */
 void LCD_BL(uint8_t status)
 {
-    LCD_BL_Status = status;
+    LCD_BL_Status_g = status;
     LCD_write_byte(0x00, 0x00);
 }
 /**
@@ -271,7 +272,7 @@ void LCD_write_string(const char *str)
    LCD.RS  = 1;
    LCD.RW  = 0;
    LCD.EN   = 0;
-   LCD.BL  = LCD_BL_Status;
+   LCD.BL  = LCD_BL_Status_g;
 
    while (*str)
    {
@@ -288,4 +289,96 @@ void LCD_delay (uint32_t delay)
 {
 	uint32_t i;
 	for(i=0;i<delay;i++);
+}
+
+/**
+ * @brief	Shift entire display
+ * @param	direction:	0: Shift left, 1: shift right
+ * @return	Nothing
+ */
+void LCD_Shift_Entire_Display(uint8_t direction)
+{
+	if(0==direction)	//shift entire display to the left
+		LCD_write_byte(0, 0x18);
+	else if(1==direction)//shift entire display to the right
+		LCD_write_byte(0, 0x1C);
+}
+
+/**
+ * @brief	Shift  string
+ * @param	line:		0: line 0, 1 line 1;
+ * @param	direction:	0: Shift left, 1: shift right
+ * @return	Nothing
+ */
+void LCD_Shift_Text(char *txt, uint8_t dir )
+{
+	int txtlen = strlen(txt)+1;
+	char tmp[txtlen];
+	uint32_t i;
+	if(dir==SHIFT_RIGHT)
+	{
+		for(i=0;i<(txtlen);i++)
+		{
+			tmp[i+1]=txt[i];
+		}
+		tmp[0]=txt[txtlen-2];
+		tmp[txtlen-1]='\0';
+		strcpy(txt,tmp);
+	}
+	else if(dir==SHIFT_LEFT)
+	{
+		for(i=0;i<(txtlen);i++)
+		{
+			tmp[i]=txt[i+1];
+		}
+		tmp[txtlen-2]=txt[0];
+		tmp[txtlen-1]='\0';
+		strcpy(txt,tmp);
+	}
+
+}
+
+
+/**
+ * @brief	Complete string
+ * @param	str:		string to be filled
+ * @param	real_size: 	real_size of the string, strlen(str)+1
+ * @param	fill_char:	character to fill the string
+ * @return	Nothing
+ * @note	Example: str[10]="hola";
+ * 			LCD_fill_str(str,10,'2');
+ * 			str -> "hola22222"
+ * 			strlen(str) -> 9 + null
+ */
+void LCD_fill_str(char *str, int real_size,char fill_char)
+{
+    char tmp[real_size];
+    int i;
+    for(i=0;i<real_size;i++)
+    {
+        tmp[i]=fill_char;
+    }
+    tmp[real_size-1]='\0';
+    for(i=0;i<strlen(str);i++)
+    {
+        tmp[i]=str[i];
+    }
+    strcpy(str,tmp);
+}
+
+
+/**
+ * @brief	writes to the selected line of the LCD
+ * @param	line:	select LCD_Buffer_g channel
+ * @param	str: 	str to copy on LCD_Buffer_g[line]
+ * @return	Nothing
+ */
+void LCD_write_str_buffer (uint8_t line, char *str)
+{
+	if(line>=2)
+		return;
+	strcpy(LCD_Buffer_g[line],str);
+	LCD_fill_str(LCD_Buffer_g[line],LCD_BUFFER_SIZE,' ');
+	LCD_Set_Cursor(0,line);
+	LCD_write_string(LCD_Buffer_g[line]);
 }

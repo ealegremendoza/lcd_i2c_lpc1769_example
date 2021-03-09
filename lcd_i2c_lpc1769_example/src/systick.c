@@ -10,6 +10,9 @@
  * @brief	Handle interrupt from SysTick timer
  * @return	Nothing
  */
+
+extern char  LCD_Buffer_g[LCD_CANT_LINES][LCD_BUFFER_SIZE];
+
 void SysTick_Handler(void)
 {
 	static uint32_t Divisor_1sec=1000;
@@ -21,12 +24,17 @@ void SysTick_Handler(void)
 	{
 		Divisor_1sec=1000;
 		Divisor_1min--;
+		/* LCD's LINE0 UPDATE */
+		LCD_Set_Cursor(0,0);
+		LCD_Shift_Text(LCD_Buffer_g[0],SHIFT_RIGHT);
+		LCD_write_string(LCD_Buffer_g[0]);
 
+		/* LCD's LINE1 UPDATE */
 		sprintf(txt,"%02d",counter);
 		counter++;
 		counter%=100;
-		LCD_Set_Cursor(0,1);
-		LCD_write_string(txt);
+		LCD_write_str_buffer(1,txt);
+
 
 		if(0==Divisor_1min)	//1 min
 		{

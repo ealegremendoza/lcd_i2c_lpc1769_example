@@ -2,7 +2,7 @@
  * debug.h
  *
  *  Created on: 9 mar. 2021
- *      Author: eze
+ *      Author: ealegremendoza
  */
 
 #ifndef DEBUG_H_

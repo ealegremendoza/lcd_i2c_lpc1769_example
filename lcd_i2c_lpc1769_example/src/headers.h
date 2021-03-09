@@ -11,7 +11,7 @@
 #include "chip.h"
 #include <cr_section_macros.h>
 #include <stdio.h>
-
+#include <string.h>
 #include "systick.h"
 #include "display1602_i2c_lpc1769.h"
 

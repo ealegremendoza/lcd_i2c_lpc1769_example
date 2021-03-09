@@ -63,11 +63,15 @@
 #define DISPLAY_CTRL		0x0F
 #define SHIFT_CURSOR 		0x06
 #define DISPLAY_CLR 		0x01
+#define SHIFT_RIGHT			1
+#define SHIFT_LEFT			0
 
 #define testbit(var, bit)   ((var) & (1 <<(bit)))
 #define bit_test    		testbit
 
-#define LEN_BUF				(17)	// LCD LINE TXT BUFFER
+#define LCD_LINE_SIZE		40	// LCD LINE TXT BUFFER
+#define LCD_BUFFER_SIZE		LCD_LINE_SIZE+1 // LCD_LINE_SIZE+\0'
+#define LCD_CANT_LINES		2
 
 /* valores para delay crudo*/
 #define	DELAY_1MS	4445	//4445	4445
@@ -203,4 +207,39 @@ void LCD_clear_line(uint8_t line);
  */
 void LCD_clear();
 
+/**
+ * @brief	Shift entire display
+ * @param	direction:	0: Shift left, 1: shift right
+ * @return	Nothing
+ */
+void LCD_Shift_Entire_Display(uint8_t direction);
+
+/**
+ * @brief	Shift  string
+ * @param	line:		0: line 0, 1 line 1;
+ * @param	direction:	0: Shift left, 1: shift right
+ * @return	Nothing
+ */
+void LCD_Shift_Text(char *txt, uint8_t dir );
+
+/**
+ * @brief	Complete string
+ * @param	str:		string to be filled
+ * @param	real_size: 	real_size of the string, strlen(str)+1
+ * @param	fill_char:	character to fill the string
+ * @return	Nothing
+ * @note	Example: str[10]="hola";
+ * 			LCD_fill_str(str,10,'2');
+ * 			str -> "hola22222"
+ * 			strlen(str) -> 9 + null
+ */
+void LCD_fill_str(char *str, int real_size,char fill_char);
+
+/**
+ * @brief	writes to the selected line of the LCD
+ * @param	line:	select LCD_Buffer_g channel
+ * @param	str: 	str to copy on LCD_Buffer_g[line]
+ * @return	Nothing
+ */
+void LCD_write_str_buffer (uint8_t line, char *str);
 #endif /* SRC_TASKS_TASK_DISPLAY1602_I2C_LPC1769_H_ */

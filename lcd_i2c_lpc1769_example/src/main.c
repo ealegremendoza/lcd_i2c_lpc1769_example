@@ -1,7 +1,7 @@
 /*
 ===============================================================================
  Name        : lcd_i2c_lpc1769_example.c
- Author      : $(author)
+ Author      : ealegremendoza
  Version     :
  Copyright   : $(copyright)
  Description : main definition
@@ -11,7 +11,7 @@
 #include "headers.h"
 
 void SysInit(void);
-
+extern char  LCD_Buffer_g[LCD_CANT_LINES][LCD_BUFFER_SIZE];
 
 int main(void) {
 
@@ -19,8 +19,7 @@ int main(void) {
 
 	DEBUGOUT("> Main.");
 
-	LCD_Set_Cursor(0,0);
-	LCD_write_string("Hello World!");
+	LCD_write_str_buffer(0,"Hello World");
 
     while(1) {
     	/* check systick handler */
