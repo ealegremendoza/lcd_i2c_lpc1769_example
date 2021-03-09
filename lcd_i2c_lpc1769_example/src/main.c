@@ -17,7 +17,7 @@ int main(void) {
 
 	SysInit();
 
-	DEBUGOUT("> Main.");
+	DEBUGOUT("> Main. ");
 
 	LCD_write_str_buffer(0,"Hello World");
 
