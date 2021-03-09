@@ -14,11 +14,20 @@ void SysTick_Handler(void)
 {
 	static uint32_t Divisor_1sec=1000;
 	static uint32_t Divisor_1min=60;
+	static uint32_t counter = 0;
+	char txt[3];
 	Divisor_1sec--;
 	if(0==Divisor_1sec)	//1 sec
 	{
 		Divisor_1sec=1000;
 		Divisor_1min--;
+
+		sprintf(txt,"%02d",counter);
+		counter++;
+		counter%=100;
+		LCD_Set_Cursor(0,1);
+		LCD_write_string(txt);
+
 		if(0==Divisor_1min)	//1 min
 		{
 			Divisor_1min=60;
