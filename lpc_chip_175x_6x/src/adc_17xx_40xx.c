@@ -43,7 +43,7 @@
  * Private functions
  ****************************************************************************/
 
-/* Get the number of clock for a full conversion */
+/* Get the number of clock for a full conversion  */
 STATIC INLINE uint8_t getFullConvClk(void)
 {
 #if defined(CHIP_LPC177X_8X) || defined(CHIP_LPC40XX)

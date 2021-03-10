@@ -22,7 +22,7 @@ int main(void) {
 	LCD_write_str_buffer(0,"Hello World");
 
     while(1) {
-    	/* check systick handler */
+    	/* check systick handler  */
     	/* do something */
     }
     return 0 ;
